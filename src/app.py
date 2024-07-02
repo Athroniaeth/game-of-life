@@ -1,5 +1,6 @@
 import pygame
 
+from src.grid import GridModel, GridView, GridController
 from src.mouse import MouseInfo
 
 
@@ -11,6 +12,10 @@ def app(fps=30):
 
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
+
+    grid_model = GridModel()
+    grid_view = GridView(screen=screen)
+    grid_controller = GridController(grid_model, grid_view)
 
     while True:
         events = _get_events()
