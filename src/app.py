@@ -13,6 +13,9 @@ def app(fps=30):
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
 
+    # Reserve specific area for the grid
+    # screen_grid = screen.subsurface((0, 0, screen_size[0], screen_size[1] - 50))
+
     grid_model = GridModel()
     grid_view = GridView(screen=screen)
     grid_controller = GridController(grid_model, grid_view)
@@ -22,6 +25,9 @@ def app(fps=30):
         mouse_info = MouseInfo.from_events(events)
 
         screen.fill((225, 225, 225))
+
+        # grid_controller.handle_event(mouse_info)
+        grid_controller.draw()
 
         pygame.display.update()
         clock.tick(fps)
