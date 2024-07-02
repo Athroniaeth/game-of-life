@@ -20,6 +20,7 @@ class GridView:
     def draw(self, grid: numpy.ndarray):
         self.screen.fill("white", (self.x, self.y, self.width, self.height))
         self._draw_grid(grid=grid)
+        self._draw_cells(grid=grid)
 
     def _draw_grid(self, grid: numpy.ndarray):
         # Le nombre de colonnes devrait être identique
@@ -32,6 +33,20 @@ class GridView:
         # Dessine les lignes de manière horizontale
         for i in range(0, self.height, cell_size):
             pygame.draw.line(self.screen, "black", (0, i), (self.width, i))
+
+    def _draw_cells(self, grid: numpy.ndarray):
+        grid_width = grid.shape[0]
+        grid_height = grid.shape[1]
+        cell_size = self.width // grid_width
+
+        generator = ((index_x, index_y) for index_x in range(grid_width) for index_y in range(grid_height))
+
+        for index_x, index_y in generator:
+            cell_x = index_x * cell_size
+            cell_y = index_y * cell_size
+
+            if grid[index_x][index_y] == 1:
+                pygame.draw.rect(self.screen, "black", (cell_x, cell_y, cell_size, cell_size))
 
 
 class GridController:
