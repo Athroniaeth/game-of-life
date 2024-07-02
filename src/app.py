@@ -1,5 +1,7 @@
 import pygame
 
+from src.mouse import MouseInfo
+
 
 def app(fps=30):
     pygame.init()
@@ -12,6 +14,7 @@ def app(fps=30):
 
     while True:
         events = _get_events()
+        mouse_info = MouseInfo.from_events(events)
 
         screen.fill((225, 225, 225))
 
