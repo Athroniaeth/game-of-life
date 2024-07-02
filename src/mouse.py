@@ -37,21 +37,23 @@ class MouseInfo:
                 if event.button == 1:
                     self.left_click = True
                     self.left_held = True
+
                 elif event.button == 3:
                     self.right_click = True
                     self.right_held = True
+
                 elif event.button == 4:
                     self.wheel_up = True
+
                 elif event.button == 5:
                     self.wheel_down = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     self.left_up = True
-                    self.left_held = False
+
                 elif event.button == 3:
                     self.right_up = True
-                    self.right_held = False
 
     def _reset(self):
         self.left_click = False

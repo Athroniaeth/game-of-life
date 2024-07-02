@@ -8,16 +8,16 @@ def app(fps=30):
     pygame.init()
 
     screen_info = pygame.display.Info()  # noqa: F841
-    screen_size = (1280, 720)
+    screen_size = (1280, 720 + 50)
 
     screen = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
 
     # Reserve specific area for the grid
-    # screen_grid = screen.subsurface((0, 0, screen_size[0], screen_size[1] - 50))
+    screen_grid = screen.subsurface((0, 0, screen_size[0], screen_size[1] - 50))
 
-    grid_model = GridModel()
-    grid_view = GridView(screen=screen)
+    grid_model = GridModel(shape=(16, 9))
+    grid_view = GridView(screen=screen_grid)
     grid_controller = GridController(grid_model, grid_view)
 
     mouse_info = MouseInfo()

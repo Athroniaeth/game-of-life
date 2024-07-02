@@ -1,4 +1,6 @@
+import itertools
 import logging
+from typing import Tuple
 
 import numpy
 import pygame
@@ -9,46 +11,66 @@ from src.mouse import MouseInfo
 class GridModel:
     grid: numpy.ndarray
 
-    def __init__(self, size: int = 20):
-        self.grid = numpy.zeros((size, size), dtype=int)
+    def __init__(self, shape: Tuple[int, int] = (16, 16)):
+        self.grid = numpy.zeros(shape, dtype=int)
 
 
 class GridView:
     def __init__(self, screen: pygame.Surface):
         self.screen = screen
-        self.x, self.y, self.width, self.height = screen.get_rect()
-        logging.info(f"Screen size: {self.width} x {self.height} started at {self.x}, {self.y}")
+        self.screen_x, self.screen_y, self.screen_height, self.screen_width = screen.get_rect()
+        logging.info(f"Screen size: {self.screen_width} x {self.screen_height} at {self.screen_x}, {self.screen_y}")
+
+    def grid_width(self, grid: numpy.ndarray):
+        grid_width = grid.shape[0] * self.cell_size(grid=grid)
+        min_width = min(grid_width, self.screen.width)
+
+        return min_width
+
+    def grid_height(self, grid: numpy.ndarray):
+        grid_height = grid.shape[1] * self.cell_size(grid=grid)
+        min_height = min(grid_height, self.screen.height)
+
+        return min_height
+
+    def cell_size(self, grid: numpy.ndarray):
+        return min(self.screen.width // grid.shape[0], self.screen.height // grid.shape[1])
 
     def draw(self, grid: numpy.ndarray):
-        self.screen.fill("white", (self.x, self.y, self.width, self.height))
-        self._draw_grid(grid=grid)
-        self._draw_cells(grid=grid)
 
-    def _draw_grid(self, grid: numpy.ndarray):
-        # Le nombre de colonnes devrait être identique
-        cell_size = self.width // grid.shape[0]
+        cell_size = self.cell_size(grid)
+        grid_width = self.grid_width(grid=grid)
+        grid_height = self.grid_height(grid=grid)
+
+        self.screen.fill("white", (self.screen_x, self.screen_y, grid_width, grid_height))
+        self._draw_grid(cell_size, grid_width, grid_height)
+        self._draw_cells(grid, cell_size)
+
+    def _draw_grid(self, cell_size: int, grid_width: int, grid_height: int):
 
         # Dessine les lignes de manière verticale
-        for i in range(0, self.width, cell_size):
-            pygame.draw.line(self.screen, "black", (i, 0), (i, self.height))
+        for i in range(0, grid_width, cell_size):
+            pygame.draw.line(self.screen, "black", (i, 0), (i, grid_height))
+
+        # Dessine la dernière ligne verticale
+        pygame.draw.line(self.screen, "black", (grid_width - 1, 0), (grid_width - 1, grid_height))
 
         # Dessine les lignes de manière horizontale
-        for i in range(0, self.height, cell_size):
-            pygame.draw.line(self.screen, "black", (0, i), (self.width, i))
+        for i in range(0, grid_height, cell_size):
+            pygame.draw.line(self.screen, "black", (0, i), (grid_width, i))
 
-    def _draw_cells(self, grid: numpy.ndarray):
-        grid_width = grid.shape[0]
-        grid_height = grid.shape[1]
-        cell_size = self.width // grid_width
+        # Dessine la dernière ligne horizontale
+        pygame.draw.line(self.screen, "black", (0, grid_height - 1), (grid_width, grid_height - 1))
 
-        generator = ((index_x, index_y) for index_x in range(grid_width) for index_y in range(grid_height))
+    def _draw_cells(self, grid: numpy.ndarray, cell_size: int):
+        nbr_rows, nbr_columns = grid.shape
+        generator = itertools.product(range(nbr_rows), range(nbr_columns))
 
-        for index_x, index_y in generator:
-            cell_x = index_x * cell_size
-            cell_y = index_y * cell_size
-
-            if grid[index_x][index_y] == 1:
-                pygame.draw.rect(self.screen, "black", (cell_x, cell_y, cell_size, cell_size))
+        for row, column in generator:
+            if grid[row][column] == 1:
+                x = row * cell_size
+                y = column * cell_size
+                pygame.draw.rect(self.screen, "black", (x, y, cell_size, cell_size))
 
 
 class GridController:
@@ -72,7 +94,7 @@ class GridController:
                 self.model.grid[row][column] = abs(self.model.grid[row][column] - 1)
 
     def _get_cell_index(self, x: int, y: int):
-        cell_size = self.view.width // self.model.grid.shape[0]
+        cell_size = self.view.cell_size(self.model.grid)
         row = x // cell_size
         column = y // cell_size
         return row, column
