@@ -20,13 +20,15 @@ def app(fps=30):
     grid_view = GridView(screen=screen)
     grid_controller = GridController(grid_model, grid_view)
 
+    mouse_info = MouseInfo()
+
     while True:
         events = _get_events()
-        mouse_info = MouseInfo.from_events(events)
+        mouse_info.update(events)
 
         screen.fill((225, 225, 225))
 
-        # grid_controller.handle_event(mouse_info)
+        grid_controller.handle_event(mouse_info)
         grid_controller.draw()
 
         pygame.display.update()

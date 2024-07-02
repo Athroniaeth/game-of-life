@@ -25,48 +25,40 @@ class MouseInfo:
     def pos(self):
         return self.x, self.y
 
-    @classmethod
-    def from_events(cls, events: List[pygame.event.Event]):
-        x, y = 0, 0
-
-        left_up = False
-        right_up = False
-
-        left_click = False
-        right_click = False
-
-        wheel_up = False
-        wheel_down = False
+    def update(self, events: List[pygame.event.Event]):
+        # Reset the values, except for the position
+        self._reset()
 
         for event in events:
             if event.type == pygame.MOUSEMOTION:
-                x, y = event.pos
+                self.x, self.y = event.pos
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    left_click = True
+                    self.left_click = True
+                    self.left_held = True
                 elif event.button == 3:
-                    right_click = True
+                    self.right_click = True
+                    self.right_held = True
                 elif event.button == 4:
-                    wheel_up = True
+                    self.wheel_up = True
                 elif event.button == 5:
-                    wheel_down = True
+                    self.wheel_down = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    left_up = True
+                    self.left_up = True
+                    self.left_held = False
                 elif event.button == 3:
-                    right_up = True
+                    self.right_up = True
+                    self.right_held = False
 
-        return cls(
-            x=x, y=y,
+    def _reset(self):
+        self.left_click = False
+        self.right_click = False
 
-            left_up=left_up,
-            right_up=right_up,
+        self.left_up = False
+        self.right_up = False
 
-            left_click=left_click,
-            right_click=right_click,
-
-            wheel_up=wheel_up,
-            wheel_down=wheel_down,
-        )
+        self.wheel_up = False
+        self.wheel_down = False
