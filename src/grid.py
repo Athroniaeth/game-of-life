@@ -3,6 +3,8 @@ import logging
 import numpy
 import pygame
 
+from src.mouse import MouseInfo
+
 
 class GridModel:
     grid: numpy.ndarray
@@ -60,3 +62,26 @@ class GridController:
 
     def draw(self):
         self.view.draw(self.model.grid)
+
+    def handle_event(self, mouse_info: MouseInfo):
+        if mouse_info.left_click:
+            row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
+
+            if self._is_valid_index(row, column):
+                logging.info(f"Clicked on cell: {row}, {column} at {mouse_info.x}, {mouse_info.y}")
+                self.model.grid[row][column] = abs(self.model.grid[row][column] - 1)
+
+    def _get_cell_index(self, x: int, y: int):
+        cell_size = self.view.width // self.model.grid.shape[0]
+        row = x // cell_size
+        column = y // cell_size
+        return row, column
+
+    def _is_valid_index(self, row: int, column: int):
+        width, height = self.model.grid.shape
+        conditions = (
+            0 <= row < width,
+            0 <= column < height,
+        )
+
+        return all(conditions)
