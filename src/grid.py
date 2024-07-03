@@ -1,6 +1,6 @@
 import itertools
 import logging
-from typing import Tuple
+from typing import Tuple, List, Optional, Set
 
 import numpy
 import pygame
@@ -10,9 +10,34 @@ from src.mouse import MouseInfo
 
 class GridModel:
     grid: numpy.ndarray
+    memory_changes: Set[Tuple[int, int]]
+    memory_color: Optional[int] = None
 
     def __init__(self, shape: Tuple[int, int] = (16, 16)):
         self.grid = numpy.zeros(shape, dtype=int)
+        self.memory_changes = set()
+        self.memory_color = None
+
+    def toggle_cell(self, row: int, column: int):
+        if self.memory_color is None:
+            self.memory_color = abs(self.grid[row][column] - 1)
+
+        self.grid[row][column] = self.memory_color
+        self.memory_changes.add((row, column))
+
+    def reset_memory(self):
+        logging.info(f"Resetting memory: {len(self.memory_changes)} changes made")
+        self.memory_changes.clear()
+        self.memory_color = None
+
+    def is_valid_index(self, row: int, column: int):
+        width, height = self.grid.shape
+        conditions = (
+            0 <= row < width,
+            0 <= column < height,
+        )
+
+        return all(conditions)
 
 
 class GridView:
@@ -89,21 +114,20 @@ class GridController:
         if mouse_info.left_click:
             row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
 
-            if self._is_valid_index(row, column):
+            if self.model.is_valid_index(row, column):
                 logging.info(f"Clicked on cell: {row}, {column} at {mouse_info.x}, {mouse_info.y}")
-                self.model.grid[row][column] = abs(self.model.grid[row][column] - 1)
+                self.model.toggle_cell(row, column)
+
+        elif mouse_info.left_held:
+            row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
+            if self.model.is_valid_index(row, column):
+                self.model.toggle_cell(row, column)
+
+        elif mouse_info.left_up:
+            self.model.reset_memory()
 
     def _get_cell_index(self, x: int, y: int):
         cell_size = self.view.cell_size(self.model.grid)
         row = x // cell_size
         column = y // cell_size
         return row, column
-
-    def _is_valid_index(self, row: int, column: int):
-        width, height = self.model.grid.shape
-        conditions = (
-            0 <= row < width,
-            0 <= column < height,
-        )
-
-        return all(conditions)
