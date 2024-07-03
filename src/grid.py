@@ -1,6 +1,6 @@
 import itertools
 import logging
-from typing import Tuple, List, Optional, Set
+from typing import Tuple, Optional, Set
 
 import numpy
 import pygame
@@ -38,6 +38,12 @@ class GridModel:
         )
 
         return all(conditions)
+
+    def clear_grid(self):
+        logging.info("Clearing the grid")
+        self.grid = numpy.zeros_like(self.grid)
+        self.memory_changes.clear()
+        self.memory_color = None
 
 
 class GridView:
@@ -117,6 +123,9 @@ class GridController:
             if self.model.is_valid_index(row, column):
                 logging.info(f"Clicked on cell: {row}, {column} at {mouse_info.x}, {mouse_info.y}")
                 self.model.toggle_cell(row, column)
+
+        elif mouse_info.right_click:
+            self.model.clear_grid()
 
         elif mouse_info.left_held:
             row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
