@@ -39,6 +39,43 @@ class GridModel:
 
         return all(conditions)
 
+    def next_generation(self):
+        new_grid = numpy.zeros_like(self.grid)
+        width, height = self.grid.shape
+
+        for row, column in itertools.product(range(width), range(height)):
+            neighbors = self._get_neighbors(row, column)
+            alive_neighbors = sum(neighbors)
+            cell = self.grid[row][column]
+
+            if cell == 1:
+                if alive_neighbors < 2 or alive_neighbors > 3:
+                    new_grid[row][column] = 0
+                else:
+                    new_grid[row][column] = 1
+            else:
+                if alive_neighbors == 3:
+                    new_grid[row][column] = 1
+
+        self.grid = new_grid
+
+    def _get_neighbors(self, row: int, column: int):
+        width, height = self.grid.shape
+        neighbors = []
+
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue
+
+                new_row = row + i
+                new_column = column + j
+
+                if 0 <= new_row < width and 0 <= new_column < height:
+                    neighbors.append(self.grid[new_row][new_column])
+
+        return neighbors
+
     def clear_grid(self):
         logging.info("Clearing the grid")
         self.grid = numpy.zeros_like(self.grid)
@@ -133,7 +170,12 @@ class GridController:
                 self.model.toggle_cell(row, column)
 
         elif mouse_info.left_up:
+
             self.model.reset_memory()
+
+        # Si il appuie sur ESPACE
+        elif pygame.key.get_pressed()[pygame.K_SPACE]:
+            self.model.next_generation()
 
     def _get_cell_index(self, x: int, y: int):
         cell_size = self.view.cell_size(self.model.grid)
