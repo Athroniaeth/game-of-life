@@ -14,7 +14,7 @@ def main():
     logger.setLevel(logging.INFO)
 
     try:
-        app()
+        app.run()
     except KeyboardInterrupt as exception:
         logging.info(f"Exiting the program: '{exception}'")
 
