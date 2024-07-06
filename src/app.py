@@ -1,12 +1,16 @@
 import pygame
+import typer
 
+from src.cli import cli
 from src.grid import GridModel, GridView, GridController
 from src.mouse import MouseInfo
 
 
-class App:
-    def __init__(self, limit_fps: int = 30):
+class Game:
+    def __init__(self, _cli: typer.Typer, limit_fps: int = 30):
         pygame.init()
+
+        self.cli = _cli
         self.fps = limit_fps
 
         screen_info = pygame.display.Info()  # noqa: F841
@@ -32,8 +36,21 @@ class App:
             self.grid_controller.handle_event(self.mouse_info)
             self.grid_controller.draw()
 
+            if self.mouse_info.left_click:
+                command = "hello World azd"
+                self._command(command)
+
             pygame.display.update()
             self.clock.tick(self.fps)
+
+    def _command(self, command: str):
+        try:
+            self.cli(command.split())
+        except SystemExit as exception:
+            return_code = exception.code
+            print("Return code:", return_code)
+            if return_code != 0:
+                raise Exception(f"Error while executing command: {command}") from exception
 
     @staticmethod
     def _get_events():
@@ -48,8 +65,7 @@ class App:
         return events
 
 
-# Injection de dépendances
-app = App()
+app = Game(cli)
 
 if __name__ == "__main__":
     app.run()
