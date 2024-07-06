@@ -35,11 +35,11 @@ class MouseInfo:
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.left_click = True
+                    self.left_click = not self.left_held
                     self.left_held = True
 
                 elif event.button == 3:
-                    self.right_click = True
+                    self.right_click = not self.right_held
                     self.right_held = True
 
                 elif event.button == 4:
