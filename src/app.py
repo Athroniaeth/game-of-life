@@ -4,22 +4,19 @@ from src.grid import GridModel, GridView, GridController
 from src.mouse import MouseInfo
 
 
-class Game:
-    def __init__(self, fps=30):
+class App:
+    def __init__(self, limit_fps: int = 30):
         pygame.init()
-        self.fps = fps
+        self.fps = limit_fps
 
         screen_info = pygame.display.Info()  # noqa: F841
-        self.screen_size = (1280, 720 + 50)
+        self.screen_size = (1280, 720)
 
         self.screen = pygame.display.set_mode(self.screen_size)
         self.clock = pygame.time.Clock()
 
-        # Reserve specific area for the grid
-        self.screen_grid = self.screen.subsurface((0, 0, self.screen_size[0], self.screen_size[1] - 50))
-
         self.grid_model = GridModel(shape=(16, 9))
-        self.grid_view = GridView(screen=self.screen_grid)
+        self.grid_view = GridView(screen=self.screen)
         self.grid_controller = GridController(self.grid_model, self.grid_view)
 
         self.mouse_info = MouseInfo()
@@ -50,3 +47,9 @@ class Game:
 
         return events
 
+
+# Injection de dépendances
+app = App()
+
+if __name__ == "__main__":
+    app.run()
