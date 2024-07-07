@@ -2,6 +2,7 @@ import pygame
 import typer
 
 from src.cli import cli
+from src.components.input_text import InputText
 from src.grid import GridModel, GridView, GridController
 from src.mouse import MouseInfo
 
@@ -14,7 +15,7 @@ class Game:
         self.fps = limit_fps
 
         screen_info = pygame.display.Info()  # noqa: F841
-        self.screen_size = (1280, 720)
+        self.screen_size = (1280, 720 + 50)
 
         self.screen = pygame.display.set_mode(self.screen_size)
         self.clock = pygame.time.Clock()
@@ -26,6 +27,8 @@ class Game:
         self.mouse_info = MouseInfo()
         self.font = pygame.font.Font(None, 32)
 
+        self.input_text = InputText(self.cli, 0, 720, 1280, 50)
+
     def run(self):
         while True:
             events = self._get_events()
@@ -36,21 +39,11 @@ class Game:
             self.grid_controller.handle_event(self.mouse_info)
             self.grid_controller.draw()
 
-            if self.mouse_info.left_click:
-                command = "hello World azd"
-                self._command(command)
+            self.input_text.handle_event(events)
+            self.input_text.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick(self.fps)
-
-    def _command(self, command: str):
-        try:
-            self.cli(command.split())
-        except SystemExit as exception:
-            return_code = exception.code
-            print("Return code:", return_code)
-            if return_code != 0:
-                raise Exception(f"Error while executing command: {command}") from exception
 
     @staticmethod
     def _get_events():
