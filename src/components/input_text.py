@@ -1,6 +1,7 @@
 from typing import List
 
 import pygame
+import typer
 
 
 class InputText:
@@ -37,3 +38,38 @@ class InputText:
 
     def bind(self):
         self.input_text = ""
+
+
+class InputTextCLI(InputText):
+    cli: typer.Typer
+
+    def __init__(
+            self,
+            cli: typer.Typer,
+            x: int,
+            y: int,
+            width: int,
+            height: int,
+            active: bool = True,
+    ):
+        super().__init__(x, y, width, height, active)
+        self.cli = cli
+
+    def handle_event(self, events: List[pygame.event.Event]):
+        """ Key '²' is used to activate the CLI."""
+        for event in events:
+            if event.type == pygame.TEXTINPUT:
+                if event.text == "²":
+                    self.active = not self.active
+                    return
+
+        super().handle_event(events)
+
+    def bind(self):
+        try:
+            commands = self.input_text.split()
+            self.cli(commands)
+        except SystemExit as exception:
+            print(f"Exiting: {exception}")
+        finally:
+            super().bind()

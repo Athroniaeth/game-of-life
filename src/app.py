@@ -2,7 +2,7 @@ import pygame
 import typer
 
 from src.cli import cli
-from src.components.input_text import InputText
+from src.components.input_text import InputText, InputTextCLI
 from src.grid import GridModel, GridView, GridController
 from src.mouse import MouseInfo
 
@@ -27,7 +27,7 @@ class Game:
         self.mouse_info = MouseInfo()
         self.font = pygame.font.Font(None, 32)
 
-        self.input_text = InputText(self.cli, 0, 720, 1280, 50)
+        self.input_text = InputTextCLI(self.cli, 0, 720, 1280, 50)
 
     def run(self):
         while True:
