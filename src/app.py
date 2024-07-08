@@ -4,6 +4,7 @@ import typer
 from src.cli import cli
 from src.components.input_text import InputText, InputTextCLI
 from src.grid import GridModel, GridView, GridController
+from src.keyboard import KeyboardInfo
 from src.mouse import MouseInfo
 
 
@@ -25,12 +26,14 @@ class Game:
         self.grid_controller = GridController(self.grid_model, self.grid_view)
 
         self.mouse_info = MouseInfo()
+        self.keyboard_info = KeyboardInfo()
         self.input_text = InputTextCLI(self.cli, 0, 670, 1280, 50, active=False, font_size=27)
 
     def run(self):
         while True:
             events = self._get_events()
             self.mouse_info.update(events)
+            self.keyboard_info.update(events)
 
             self.screen.fill((225, 225, 225))
 
