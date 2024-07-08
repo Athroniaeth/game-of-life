@@ -5,6 +5,7 @@ from typing import Tuple, Optional, Set, List
 import numpy
 import pygame
 
+from src.keyboard import KeyboardInfo
 from src.mouse import MouseInfo
 
 
@@ -153,7 +154,7 @@ class GridController:
     def draw(self):
         self.view.draw(self.model.grid)
 
-    def handle_event(self, mouse_info: MouseInfo, events: List[pygame.event.Event]):
+    def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
         if mouse_info.left_click:
             row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
 
@@ -173,9 +174,8 @@ class GridController:
             self.model.reset_memory()
 
         # Si il appuie sur ESPACE
-        for event in events:
-            if event.type == pygame.TEXTINPUT and event.text == " ":
-                self.model.next_generation()
+        if keyboard_info.keyboard_click[' '] or keyboard_info.keyboard_hard_held[' ']:
+            self.model.next_generation()
 
     def _get_cell_index(self, x: int, y: int):
         cell_size = self.view.cell_size(self.model.grid)

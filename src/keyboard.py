@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Dict, DefaultDict
+from typing import List, Dict
 
 import pygame
 
@@ -17,9 +17,10 @@ class KeyboardInfo:
         self._reset()
 
     def update(self, events: List[pygame.event.Event]):
-        # Si la touche est enfoncée
+        # Pour chaque touche enfoncée
         generator = (key for key in self.keyboard_soft_held.keys() if self.keyboard_soft_held[key])
         for key in generator:
+            # Ce n'est plus le premier clique
             self.keyboard_click[key] = False
 
             # Si la touche dépasse le temps de delay "hard"
@@ -28,10 +29,9 @@ class KeyboardInfo:
             if calcul > self.delay_hard_held:
                 self.keyboard_hard_held[key] = True
 
-
         for event in events:
             if event.type == pygame.KEYDOWN and event.unicode != "":
-                # Si la touche n'est pas déjà enfoncée
+                # Si la touche n'est pas déjà enfoncée, attribue le premier clique
                 if not self.keyboard_soft_held[event.unicode]:
                     self.keyboard_click[event.unicode] = True
                     self.keyboard_soft_held[event.unicode] = True
@@ -39,16 +39,11 @@ class KeyboardInfo:
 
             # Todo : Gérer les touches spéciales
 
-            # Si la touche est relâchée
+            # Si la touche est relâchée, reset les valeurs
             elif event.type == pygame.KEYUP and event.unicode != "":
                 self.keyboard_click[event.unicode] = False
                 self.keyboard_soft_held[event.unicode] = False
                 self.keyboard_hard_held[event.unicode] = False
-
-            # Après l'attribution de valeurs, on vérifie si la touche est maintenue
-
-            # Pour chaque touche enfoncée
-
 
     def _reset(self):
         self.keyboard_click = defaultdict(bool)

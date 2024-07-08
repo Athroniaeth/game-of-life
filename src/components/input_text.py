@@ -1,9 +1,9 @@
-from typing import List
-
 import pygame
 import typer
 
 from src import STATIC_PATH
+from src.keyboard import KeyboardInfo
+from src.mouse import MouseInfo
 
 
 class InputText:
@@ -30,16 +30,16 @@ class InputText:
 
         self.background_color = background_color
 
-    def handle_event(self, events: List[pygame.event.Event]):
+    def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
         if self.active:
-            for event in events:
-                if event.type == pygame.TEXTINPUT:
-                    self.input_text += event.text
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
+            for key in keyboard_info.keyboard_click:
+                if keyboard_info.keyboard_click[key]:
+                    if key == '\r':
                         self.bind()
-                    elif event.key == pygame.K_BACKSPACE:
+                    elif key == '\x08':
                         self.input_text = self.input_text[:-1]
+                    else:
+                        self.input_text += key
 
     def draw(self, screen: pygame.Surface):
         if self.active:
@@ -91,15 +91,13 @@ class InputTextCLI(InputText):
         )
         self.cli = cli
 
-    def handle_event(self, events: List[pygame.event.Event]):
+    def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
         """ Key '²' is used to activate the CLI."""
-        for event in events:
-            if event.type == pygame.TEXTINPUT:
-                if event.text == "²":
-                    self.active = not self.active
-                    return
+        if keyboard_info.keyboard_click['²']:
+            self.active = not self.active
+            return
 
-        super().handle_event(events)
+        super().handle_event(mouse_info, keyboard_info)
 
     def bind(self):
         try:
