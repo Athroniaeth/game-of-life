@@ -15,18 +15,19 @@ class Game:
         self.cli = _cli
         self.fps = limit_fps
 
+        self.mouse_info = MouseInfo()
+        self.keyboard_info = KeyboardInfo()
+
         screen_info = pygame.display.Info()  # noqa: F841
         self.screen_size = (1280, 720)
 
         self.screen = pygame.display.set_mode(self.screen_size)
         self.clock = pygame.time.Clock()
 
-        self.grid_model = GridModel(shape=(32, 18))
+        self.grid_model = GridModel(shape=(35, 19))
         self.grid_view = GridView(screen=self.screen)
         self.grid_controller = GridController(self.grid_model, self.grid_view)
 
-        self.mouse_info = MouseInfo()
-        self.keyboard_info = KeyboardInfo()
         self.input_text = InputTextCLI(self.cli, 0, 670, 1280, 50, active=False, font_size=27)
 
     def run(self):
@@ -38,11 +39,11 @@ class Game:
             self.screen.fill((225, 225, 225))
 
             if not self.input_text.active:
-                self.grid_controller.handle_event(self.mouse_info, events)
+                self.grid_controller.handle_event(self.mouse_info, self.keyboard_info)
 
             self.grid_controller.draw()
 
-            self.input_text.handle_event(events)
+            self.input_text.handle_event(self.mouse_info, self.keyboard_info)
             self.input_text.draw(self.screen)
 
             pygame.display.update()
