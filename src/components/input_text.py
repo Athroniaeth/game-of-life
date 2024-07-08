@@ -3,6 +3,8 @@ from typing import List
 import pygame
 import typer
 
+from src import STATIC_PATH
+
 
 class InputText:
     def __init__(
@@ -13,10 +15,10 @@ class InputText:
             height: int,
 
             active: bool = True,
-            font_name: str = 'Consolas',
-            font_size: int = 24,
-            font_color: str = "black",
-            background_color: str = "white",
+            font_name: str = 'Arial',
+            font_size: int = 32,
+            font_color: pygame.Color = pygame.Color(0, 0, 0),
+            background_color: pygame.Color = pygame.Color(200, 200, 200),
     ):
         self.input_text = ""
         self.active = active
@@ -41,10 +43,24 @@ class InputText:
 
     def draw(self, screen: pygame.Surface):
         if self.active:
-            pygame.draw.rect(screen, self.background_color, self.textbox_rect)
-            font = pygame.font.SysFont(self.font_name, self.font_size)
+            # Créer une surface pour le rectangle de texte
+            textbox_surface = pygame.Surface(self.textbox_rect.size)
+
+            # Remplir la surface avec la couleur d'arrière-plan
+            textbox_surface.fill(self.background_color)
+
+            # Rendre la surface transparente
+            textbox_surface.set_alpha(self.background_color.a)
+
+            # Dessiner la surface sur l'écran
+            screen.blit(textbox_surface, self.textbox_rect)
+
+            font = pygame.Font(STATIC_PATH / 'Inconsolata.ttf', self.font_size)
             text = font.render(self.input_text, True, pygame.Color(self.font_color))
-            screen.blit(text, (self.textbox_rect.x + 5, self.textbox_rect.y + 5))
+
+            padding_horizontal = 20
+            padding_vertical = (self.textbox_rect.height - text.get_height()) // 2
+            screen.blit(text, (self.textbox_rect.x + padding_horizontal, self.textbox_rect.y + padding_vertical))
 
     def bind(self):
         self.input_text = ""
@@ -63,10 +79,11 @@ class InputTextCLI(InputText):
             height: int,
 
             active: bool = True,
-            font_name: str = 'Consolas',
-            font_size: int = 24,
-            font_color: str = "white",
-            background_color: str = "black",
+            font_name: str = 'Inconsolata.ttf',
+            font_size: int = 32,
+
+            font_color: pygame.Color = pygame.Color(255, 255, 255),
+            background_color: pygame.Color = pygame.Color(0, 0, 0, 170),
     ):
         super().__init__(
             x, y, width, height,
