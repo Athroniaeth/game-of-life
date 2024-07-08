@@ -1,6 +1,6 @@
 import itertools
 import logging
-from typing import Tuple, Optional, Set, List
+from typing import Tuple, Optional, Set
 
 import numpy
 import pygame
@@ -112,8 +112,9 @@ class GridView:
         grid_height = self.grid_height(grid=grid)
 
         self.screen.fill("white", (self.screen_x, self.screen_y, grid_width, grid_height))
-        self._draw_grid(cell_size, grid_width, grid_height)
+
         self._draw_cells(grid, cell_size)
+        self._draw_grid(cell_size, grid_width, grid_height)
 
     def _draw_grid(self, cell_size: int, grid_width: int, grid_height: int):
 
@@ -135,7 +136,23 @@ class GridView:
         nbr_rows, nbr_columns = grid.shape
         generator = itertools.product(range(nbr_rows), range(nbr_columns))
 
+        middle_row = [nbr_rows // 2]
+        middle_column = [nbr_columns // 2]
+
+        if nbr_rows % 2 == 0:
+            middle_row += [nbr_rows // 2 - 1]
+
+        if nbr_columns % 2 == 0:
+            middle_column += [nbr_columns // 2 - 1]
+
         for row, column in generator:
+            # Dessine des lignes grises pour indiquer le milieu (verticalement, horizontalement)
+            if (row in middle_row) or (column in middle_column):
+                x = row * cell_size
+                y = column * cell_size
+                pygame.draw.rect(self.screen, (225, 225, 230), (x, y, cell_size, cell_size))
+
+            # Dessine les cellules vivantes
             if grid[row][column] == 1:
                 x = row * cell_size
                 y = column * cell_size

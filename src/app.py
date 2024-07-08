@@ -2,7 +2,7 @@ import pygame
 import typer
 
 from src.cli import cli
-from src.components.input_text import InputText, InputTextCLI
+from src.components.input_text import InputTextCLI
 from src.grid import GridModel, GridView, GridController
 from src.keyboard import KeyboardInfo
 from src.mouse import MouseInfo
@@ -24,7 +24,7 @@ class Game:
         self.screen = pygame.display.set_mode(self.screen_size)
         self.clock = pygame.time.Clock()
 
-        self.grid_model = GridModel(shape=(35, 19))
+        self.grid_model = GridModel(shape=(65, 37))
         self.grid_view = GridView(screen=self.screen)
         self.grid_controller = GridController(self.grid_model, self.grid_view)
 
