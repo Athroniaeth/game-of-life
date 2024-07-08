@@ -8,7 +8,7 @@ cli = typer.Typer()
 
 @cli.command()
 def hello(name: str):
-    print(module_app.app.grid_model.grid[0][0])
+    module_app.app.grid_model.grid[0][0] = 1
     print(f"Hello {name}")
 
 
