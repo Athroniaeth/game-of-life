@@ -28,7 +28,7 @@ class Game:
         self.grid_view = GridView(screen=self.screen)
         self.grid_controller = GridController(self.grid_model, self.grid_view)
 
-        self.input_text = InputTextCLI(self.cli, 0, 670, 1280, 50, active=False, font_size=27)
+        self.input_text = InputTextCLI(self.cli, 0, 0, 1280, 720, active=False, font_size=23)
 
     def run(self):
         while True:
