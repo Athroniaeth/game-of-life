@@ -35,7 +35,7 @@ class Game:
             self.screen.fill((225, 225, 225))
 
             if not self.input_text.active:
-                self.grid_controller.handle_event(self.mouse_info)
+                self.grid_controller.handle_event(self.mouse_info, events)
 
             self.grid_controller.draw()
 
