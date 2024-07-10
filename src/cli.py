@@ -1,27 +1,37 @@
+import numpy
 import typer
 from typer.testing import CliRunner
 
 cli = typer.Typer(
-    name="",
+    name="APPLICATION",
     add_completion=False,
     no_args_is_help=False,
-    help="This is a simple CLI app.",
     add_help_option=True,
     context_settings={"help_option_names": ["--help"]},
 )
 
 
-@cli.command()
-def hello(name: str):
-    typer.echo(f"hello {name}")
+def get_app():
+    from src.app import app
+    return app
+
+
+@cli.command(help="Reshape the grid to the specified dimensions. (delete all cells)")
+def reshape(
+        width: int = typer.Argument(65, help="Width of the grid"),
+        height: int = typer.Argument(37, help="Height of the grid")
+):
+    app = get_app()
+    app.grid_model.grid = numpy.zeros((width, height), dtype=int)
+    typer.echo(f"Grid reshaped, new dimensions: {width}x{height}")
 
 
 @cli.command(name="help", help="Display help message, list of commands.")
 def _help():
+    """ Permet d'avoir la commande 'help' plus cohérente dans une console. """
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
     typer.echo(result.stdout)
-    print(result.stdout)
 
 
 if __name__ == "__main__":

@@ -83,6 +83,12 @@ class GridModel:
         self.memory_changes.clear()
         self.memory_color = None
 
+    def reshape(self, width: int, height: int):
+        logging.info(f"Reshaping the grid to: {width} x {height}")
+        self.grid = numpy.zeros((width, height), dtype=int)
+        self.memory_changes.clear()
+        self.memory_color = None
+
 
 class GridView:
     def __init__(self, screen: pygame.Surface):

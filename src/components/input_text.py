@@ -72,13 +72,13 @@ class InputTextCLI(InputText):
 
             active: bool = True,
             font_name: str = 'Consolas.ttf',
-            font_size: int = 24,
+            font_size: int = 20,
 
             font_color: pygame.Color = pygame.Color(255, 255, 255),
             background_color: pygame.Color = pygame.Color(0, 0, 0, 200),
 
             history_limit: int = 30,
-            history_font_color: pygame.Color = pygame.Color(200, 200, 200),
+            history_font_color: pygame.Color = pygame.Color(220, 220, 220),
     ):
         super().__init__(
             x, y, width, height,
@@ -109,7 +109,7 @@ class InputTextCLI(InputText):
                 for i, line in enumerate(self.history[:-self.history_limit:-1]):
                     font = pygame.font.Font(self.font_path, self.font_size)
                     text = font.render(line, True, self.history_font_color)
-                    padding_vertical = screen.size[1] - self.font_size * 1 - (i + 1) * self.font_size
+                    padding_vertical = screen.size[1] - self.font_size * 1.5 - (i + 1) * self.font_size
                     screen.blit(text, (self.textbox_rect.x + padding_horizontal, self.textbox_rect.y + padding_vertical))
 
     def bind(self):
