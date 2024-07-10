@@ -33,6 +33,15 @@ def limit_fps(fps: int = typer.Argument(60, help="Frames per second")):
     typer.echo(f"Speed changed, new speed: {fps}")
 
 
+@cli.command(help="Clear the grid of all live cells.")
+def clear():
+    app = get_app()
+    number_cells_live = app.grid_model.grid.sum()
+
+    app.grid_model.clear_grid()
+    typer.echo(f"Grid cleared, deleted cells: {number_cells_live}")
+
+
 @cli.command(name="help", help="Display help message, list of commands.")
 def _help():
     """ Permet d'avoir la commande 'help' plus cohérente dans une console. """
