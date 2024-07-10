@@ -2,7 +2,7 @@ import pygame
 import typer
 
 from src.cli import cli
-from src.components.input_text import InputTextCLI
+from src.components.console import Console
 from src.grid import GridModel, GridView, GridController
 from src.keyboard import KeyboardInfo
 from src.mouse import MouseInfo
@@ -28,7 +28,7 @@ class Game:
         self.grid_view = GridView(screen=self.screen)
         self.grid_controller = GridController(self.grid_model, self.grid_view)
 
-        self.input_text = InputTextCLI(self.cli, 0, 0, 1280, 720, active=False, font_size=20)
+        self.console = Console(self.cli, 0, 0, 1280, 720, active=False, font_size=20)
 
     def run(self):
         while True:
@@ -38,13 +38,13 @@ class Game:
 
             self.screen.fill((225, 225, 225))
 
-            if not self.input_text.active:
+            if not self.console.active:
                 self.grid_controller.handle_event(self.mouse_info, self.keyboard_info)
 
             self.grid_controller.draw()
 
-            self.input_text.handle_event(self.mouse_info, self.keyboard_info)
-            self.input_text.draw(self.screen)
+            self.console.handle_event(self.mouse_info, self.keyboard_info)
+            self.console.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick(self.fps)
