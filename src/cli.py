@@ -26,6 +26,13 @@ def reshape(
     typer.echo(f"Grid reshaped, new dimensions: {width}x{height}")
 
 
+@cli.command(help="Change the speed of the game.")
+def limit_fps(fps: int = typer.Argument(60, help="Frames per second")):
+    app = get_app()
+    app.fps = fps
+    typer.echo(f"Speed changed, new speed: {fps}")
+
+
 @cli.command(name="help", help="Display help message, list of commands.")
 def _help():
     """ Permet d'avoir la commande 'help' plus cohérente dans une console. """
