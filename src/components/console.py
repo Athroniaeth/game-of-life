@@ -1,18 +1,18 @@
-from functools import partial
 from typing import List
 
 import pygame
 import typer
 from typer.testing import CliRunner
 
+from src.components.base import Component
 from src.components.input_text import InputText, _draw_input_text
-from src.keyboard import KeyboardInfo
-from src.mouse import MouseInfo
+from src.core.keyboard import KeyboardInfo
+from src.core.mouse import MouseInfo
 
 runner = CliRunner()
 
 
-class Console:
+class Console(Component):
     """
     Console allowing the user to interact with the application.
 
