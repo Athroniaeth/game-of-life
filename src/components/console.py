@@ -13,6 +13,18 @@ runner = CliRunner()
 
 
 class Console:
+    """
+    Console allowing the user to interact with the application.
+
+    Attributes:
+        active (bool): Whether the console is active.
+        cli (typer.Typer): The CLI application to bind to.
+        input_text (InputText): The input text component.
+
+        history (List[str]): The history of the console.
+        history_limit (int): The limit of the history.
+        history_font_color (pygame.Color): The color of the history font
+    """
     active: bool
     cli: typer.Typer
     input_text: InputText
@@ -53,7 +65,8 @@ class Console:
         self.history_font_color = history_font_color
 
     def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
-        """ Key '²' is used to activate the CLI."""
+        """ Open / Close the console by activating / deactivating components"""
+        # Key '²' is used to activate the CLI. (like Skyrim :DDD)
         if keyboard_info.keyboard_click['²']:
             active = not self.active
             self.active = active
@@ -63,6 +76,7 @@ class Console:
         self.input_text.handle_event(mouse_info, keyboard_info)
 
     def draw(self, screen: pygame.Surface):
+        """ Draws text entry and old commands. """
         if self.active:
             text = _draw_input_text(self.input_text, screen)
             padding_horizontal = 20
@@ -78,6 +92,7 @@ class Console:
                     screen.blit(text, (self.input_text.textbox_rect.x + padding_horizontal, self.input_text.textbox_rect.y + padding_vertical))
 
     def bind(self):
+        """ Runs command and adds result to history. """
         result = runner.invoke(self.cli, self.input_text.text.split())
         self.history += result.stdout.split('\n')
         # Todo : Faire une deuxième limite d'historique mémoire

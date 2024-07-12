@@ -28,7 +28,8 @@ class GridModel:
 
     def toggle_cell(self, row: int, column: int):
         if self.memory_color is None:
-            self.memory_color = abs(self.grid[row][column] - 1)
+            value = self.grid[row][column].item()
+            self.memory_color = abs(value - 1)
 
         self.grid[row][column] = self.memory_color
         self.memory_changes.add((row, column))
