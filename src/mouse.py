@@ -6,6 +6,25 @@ import pygame
 
 @dataclass
 class MouseInfo:
+    """
+    Class that holds the information about the mouse.
+
+    Attributes:
+        x (int): The x position of the mouse.
+        y (int): The y position of the mouse.
+
+        left_up (bool): Whether the left button was released.
+        right_up (bool): Whether the right button was released.
+
+        left_click (bool): Whether the left button was clicked.
+        right_click (bool): Whether the right button was clicked.
+
+        left_held (bool): Whether the left button is being held.
+        right_held (bool): Whether the right button is being held.
+
+        wheel_up (bool): Whether the wheel was scrolled up.
+        wheel_down (bool): Whether the wheel was scrolled down.
+    """
     x: int = 0
     y: int = 0
 
@@ -26,6 +45,12 @@ class MouseInfo:
         return self.x, self.y
 
     def update(self, events: List[pygame.event.Event]):
+        """
+        Update the mouse information based on the events
+
+        Args:
+            events (List[pygame.event.Event]): A list of events from the user.
+        """
         # Reset the values, except for the position
         self._reset()
 
@@ -33,6 +58,7 @@ class MouseInfo:
             if event.type == pygame.MOUSEMOTION:
                 self.x, self.y = event.pos
 
+            # First click, held always False, after always True until release
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.left_click = not self.left_held
@@ -58,6 +84,7 @@ class MouseInfo:
                     self.right_held = False
 
     def _reset(self):
+        """ Reset the values of the mouse information. """
         self.left_up = False
         self.right_up = False
 
