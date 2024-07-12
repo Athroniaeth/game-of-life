@@ -1,6 +1,7 @@
 import itertools
 import logging
-from typing import Tuple, Optional, Set
+from collections import deque
+from typing import Tuple, Optional, Set, Deque
 
 import numpy
 import pygame
@@ -14,10 +15,16 @@ class GridModel:
     memory_changes: Set[Tuple[int, int]]
     memory_color: Optional[int] = None
 
-    def __init__(self, shape: Tuple[int, int] = (16, 16)):
+    history: Deque[numpy.ndarray]
+    limit_history: int = 100
+
+    def __init__(self, shape: Tuple[int, int] = (16, 16), limit_history: int = 100):
         self.grid = numpy.zeros(shape, dtype=int)
         self.memory_changes = set()
         self.memory_color = None
+
+        self.history = deque(maxlen=limit_history)
+        self.limit_history = limit_history
 
     def toggle_cell(self, row: int, column: int):
         if self.memory_color is None:
@@ -41,6 +48,9 @@ class GridModel:
         return all(conditions)
 
     def next_generation(self):
+        print(f"History: {len(self.history)}")
+        self.history.append(self.grid)
+
         new_grid = numpy.zeros_like(self.grid)
         width, height = self.grid.shape
 
@@ -58,7 +68,11 @@ class GridModel:
                 if alive_neighbors == 3:
                     new_grid[row][column] = 1
 
-        self.grid = new_grid
+        if numpy.array_equal(self.grid, new_grid):
+            logging.info("No changes were made, the grid is stable")
+            self.history.pop()
+
+        self.grid = new_grid.copy()
 
     def _get_neighbors(self, row: int, column: int):
         width, height = self.grid.shape
@@ -178,6 +192,7 @@ class GridController:
         self.view.draw(self.model.grid)
 
     def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
+        # Bascule (toggle) la cellule
         if mouse_info.left_click:
             row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
 
@@ -185,20 +200,31 @@ class GridController:
                 logging.info(f"Clicked on cell: {row}, {column} at {mouse_info.x}, {mouse_info.y}")
                 self.model.toggle_cell(row, column)
 
+        # Supprime toutes les cellules
         elif mouse_info.right_click:
             self.model.clear_grid()
 
+        # Maintient le clic gauche pour dessiner
         elif mouse_info.left_held:
             row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
+
             if self.model.is_valid_index(row, column):
                 self.model.toggle_cell(row, column)
 
+        # Reset la mémoire du maintien du clic gauche
         elif mouse_info.left_up:
             self.model.reset_memory()
+            self.model.history.clear()
 
-        # Si il appuie sur ESPACE
+        # Génère la prochaine génération
         if keyboard_info.keyboard_click[' '] or keyboard_info.keyboard_hard_held[' ']:
             self.model.next_generation()
+
+        # Reviens à la dernière génération
+        if keyboard_info.keyboard_click['r'] or keyboard_info.keyboard_hard_held['r']:
+            print(f"History: {len(self.model.history)}")
+            if len(self.model.history) != 0:
+                self.model.grid = self.model.history.pop()
 
     def _get_cell_index(self, x: int, y: int):
         cell_size = self.view.cell_size(self.model.grid)
