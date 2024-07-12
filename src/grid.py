@@ -109,6 +109,8 @@ class GridView:
         self.screen = screen
         self.screen_x, self.screen_y, self.screen_height, self.screen_width = screen.get_rect()
         logging.info(f"Screen size: {self.screen_width} x {self.screen_height} at {self.screen_x}, {self.screen_y}")
+        self.target_row = None
+        self.target_column = None
 
     def grid_width(self, grid: numpy.ndarray):
         grid_width = grid.shape[0] * self.cell_size(grid=grid)
@@ -135,6 +137,7 @@ class GridView:
 
         self._draw_cells(grid, cell_size)
         self._draw_grid(cell_size, grid_width, grid_height)
+        self._draw_coords()
 
     def _draw_grid(self, cell_size: int, grid_width: int, grid_height: int):
 
@@ -178,6 +181,10 @@ class GridView:
                 y = column * cell_size
                 pygame.draw.rect(self.screen, "black", (x, y, cell_size, cell_size))
 
+    def _draw_coords(self):
+        # Change le titre de la fenêtre pour afficher les coordonnées de la cellule survolée
+        pygame.display.set_caption(f"Game of Life  (x={self.target_row}, y={self.target_column})")
+
 
 class GridController:
     def __init__(
@@ -192,24 +199,26 @@ class GridController:
         self.view.draw(self.model.grid)
 
     def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
-        # Bascule (toggle) la cellule
-        if mouse_info.left_click:
-            row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
+        row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
+        valid_index = self.model.is_valid_index(row, column)
 
-            if self.model.is_valid_index(row, column):
-                logging.info(f"Clicked on cell: {row}, {column} at {mouse_info.x}, {mouse_info.y}")
-                self.model.toggle_cell(row, column)
+        # Ecrit les coordonnées de la cellule survolée (sur screen)
+        if valid_index:
+            self.view.target_row = row
+            self.view.target_column = column
+
+        # Bascule (toggle) la cellule
+        if mouse_info.left_click and valid_index:
+            logging.info(f"Clicked on cell: {row}, {column} at {mouse_info.x}, {mouse_info.y}")
+            self.model.toggle_cell(row, column)
 
         # Supprime toutes les cellules
-        elif mouse_info.right_click:
+        elif mouse_info.right_click and valid_index:
             self.model.clear_grid()
 
         # Maintient le clic gauche pour dessiner
-        elif mouse_info.left_held:
-            row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
-
-            if self.model.is_valid_index(row, column):
-                self.model.toggle_cell(row, column)
+        elif mouse_info.left_held and valid_index:
+            self.model.toggle_cell(row, column)
 
         # Reset la mémoire du maintien du clic gauche
         elif mouse_info.left_up:
@@ -222,7 +231,6 @@ class GridController:
 
         # Reviens à la dernière génération
         if keyboard_info.keyboard_click['r'] or keyboard_info.keyboard_hard_held['r']:
-            print(f"History: {len(self.model.history)}")
             if len(self.model.history) != 0:
                 self.model.grid = self.model.history.pop()
 
