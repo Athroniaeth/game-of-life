@@ -7,8 +7,8 @@ import typer
 from src.cli import cli
 from src.components.console import Console
 from src.grid import GridModel, GridView, GridController
-from src.keyboard import KeyboardInfo
-from src.mouse import MouseInfo
+from src.core.keyboard import KeyboardInfo
+from src.core.mouse import MouseInfo
 
 
 @dataclass

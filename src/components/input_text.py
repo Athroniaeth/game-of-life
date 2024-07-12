@@ -1,11 +1,12 @@
 import pygame
 
 from src import STATIC_PATH
-from src.keyboard import KeyboardInfo
-from src.mouse import MouseInfo
+from src.components.base import Component
+from src.core.keyboard import KeyboardInfo
+from src.core.mouse import MouseInfo
 
 
-class InputText:
+class InputText(Component):
     """
     Component to handle input text from the user.
 

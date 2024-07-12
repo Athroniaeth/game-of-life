@@ -6,8 +6,8 @@ from typing import Tuple, Optional, Set, Deque
 import numpy
 import pygame
 
-from src.keyboard import KeyboardInfo
-from src.mouse import MouseInfo
+from src.core.keyboard import KeyboardInfo
+from src.core.mouse import MouseInfo
 
 
 class GridModel:
