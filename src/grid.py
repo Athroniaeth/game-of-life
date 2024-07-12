@@ -105,12 +105,14 @@ class GridModel:
 
 
 class GridView:
+    title: str
+    screen: pygame.Surface
+
     def __init__(self, screen: pygame.Surface):
+        self.title = "Game of Life"
         self.screen = screen
         self.screen_x, self.screen_y, self.screen_height, self.screen_width = screen.get_rect()
         logging.info(f"Screen size: {self.screen_width} x {self.screen_height} at {self.screen_x}, {self.screen_y}")
-        self.target_row = None
-        self.target_column = None
 
     def grid_width(self, grid: numpy.ndarray):
         grid_width = grid.shape[0] * self.cell_size(grid=grid)
@@ -137,7 +139,7 @@ class GridView:
 
         self._draw_cells(grid, cell_size)
         self._draw_grid(cell_size, grid_width, grid_height)
-        self._draw_coords()
+        self._draw_title()
 
     def _draw_grid(self, cell_size: int, grid_width: int, grid_height: int):
 
@@ -181,9 +183,10 @@ class GridView:
                 y = column * cell_size
                 pygame.draw.rect(self.screen, "black", (x, y, cell_size, cell_size))
 
-    def _draw_coords(self):
+    def _draw_title(self):
+        # Note, on garde cette façon de faire pour garder la possibilité d'afficher sur l'écran
         # Change le titre de la fenêtre pour afficher les coordonnées de la cellule survolée
-        pygame.display.set_caption(f"Game of Life  (x={self.target_row}, y={self.target_column})")
+        pygame.display.set_caption(self.title)
 
 
 class GridController:
@@ -201,11 +204,6 @@ class GridController:
     def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
         row, column = self._get_cell_index(mouse_info.x, mouse_info.y)
         valid_index = self.model.is_valid_index(row, column)
-
-        # Ecrit les coordonnées de la cellule survolée (sur screen)
-        if valid_index:
-            self.view.target_row = row
-            self.view.target_column = column
 
         # Bascule (toggle) la cellule
         if mouse_info.left_click and valid_index:
@@ -234,8 +232,17 @@ class GridController:
             if len(self.model.history) != 0:
                 self.model.grid = self.model.history.pop()
 
+        self._update_info(row, column)
+
     def _get_cell_index(self, x: int, y: int):
         cell_size = self.view.cell_size(self.model.grid)
         row = x // cell_size
         column = y // cell_size
         return row, column
+
+    def _update_info(self, row: int, column: int):
+        # les informations doivent être affichées a la fin
+        length_history = len(self.model.history)
+        self.view.title = f"Game of Life  ("
+        self.view.title += f"x={row}, y={column} - "
+        self.view.title += f"history: {length_history}/{self.model.limit_history})"
