@@ -16,9 +16,9 @@ class GridModel:
     memory_color: Optional[int] = None
 
     history: Deque[numpy.ndarray]
-    limit_history: int = 100
+    limit_history: int
 
-    def __init__(self, shape: Tuple[int, int] = (16, 16), limit_history: int = 100):
+    def __init__(self, shape: Tuple[int, int] = (16, 16), limit_history: int = 500):
         self.grid = numpy.zeros(shape, dtype=int)
         self.memory_changes = set()
         self.memory_color = None
@@ -214,6 +214,7 @@ class GridController:
         # Supprime toutes les cellules
         elif mouse_info.right_click and valid_index:
             self.model.clear_grid()
+            self.model.history.clear()
 
         # Maintient le clic gauche pour dessiner
         elif mouse_info.left_held and valid_index:
@@ -222,7 +223,6 @@ class GridController:
         # Reset la mémoire du maintien du clic gauche
         elif mouse_info.left_up:
             self.model.reset_memory()
-            self.model.history.clear()
 
         # Génère la prochaine génération
         if keyboard_info.keyboard_click[' '] or keyboard_info.keyboard_hard_held[' ']:
