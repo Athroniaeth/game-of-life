@@ -25,6 +25,7 @@ class MouseInfo:
         wheel_up (bool): Whether the wheel was scrolled up.
         wheel_down (bool): Whether the wheel was scrolled down.
     """
+
     x: int = 0
     y: int = 0
 
@@ -84,7 +85,7 @@ class MouseInfo:
                     self.right_held = False
 
     def _reset(self):
-        """ Reset the values of the mouse information. """
+        """Reset the values of the mouse information."""
         self.left_up = False
         self.right_up = False
 

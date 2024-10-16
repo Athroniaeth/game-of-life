@@ -19,8 +19,12 @@ class KeyboardInfo:
     """
 
     keyboard_click: Dict[str, bool] = field(default_factory=lambda: defaultdict(bool))
-    keyboard_soft_held: Dict[str, bool] = field(default_factory=lambda: defaultdict(bool))
-    keyboard_hard_held: Dict[str, bool] = field(default_factory=lambda: defaultdict(bool))
+    keyboard_soft_held: Dict[str, bool] = field(
+        default_factory=lambda: defaultdict(bool)
+    )
+    keyboard_hard_held: Dict[str, bool] = field(
+        default_factory=lambda: defaultdict(bool)
+    )
 
     keyboard_delay: Dict[str, float] = field(default_factory=lambda: defaultdict(float))
 
@@ -34,7 +38,11 @@ class KeyboardInfo:
             events (List[pygame.event.Event]): A list of events from the user.
         """
         # Generator foreach key that is softly held
-        generator = (key for key in self.keyboard_soft_held.keys() if self.keyboard_soft_held[key])
+        generator = (
+            key
+            for key in self.keyboard_soft_held.keys()
+            if self.keyboard_soft_held[key]
+        )
 
         for key in generator:
             # It's not the first click
@@ -63,7 +71,7 @@ class KeyboardInfo:
                 self.keyboard_hard_held[event.unicode] = False
 
     def _reset(self):
-        """ Reset the values of the keyboard information. """
+        """Reset the values of the keyboard information."""
         self.keyboard_click = defaultdict(bool)
         self.keyboard_soft_held = defaultdict(bool)
         self.keyboard_hard_held = defaultdict(bool)

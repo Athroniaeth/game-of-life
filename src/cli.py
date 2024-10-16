@@ -15,18 +15,20 @@ cli = typer.Typer(
 
 
 def get_app():
-    """ Shorter way to get the application. """
+    """Shorter way to get the application without cyclic imports."""
     from src.app import app
+
     return app
 
 
 @cli.command(help="Reshape the grid to the specified dimensions. (delete all cells)")
 def reshape(
-        width: int = typer.Argument(65, help="Width of the grid"),
-        height: int = typer.Argument(37, help="Height of the grid")
+    width: int = typer.Argument(65, help="Width of the grid"),
+    height: int = typer.Argument(37, help="Height of the grid"),
 ):
     """
     Reshape the grid to the specified dimensions (delete all cells).
+
     Args:
         width (int): New width of the grid.
         height (int): New height of the grid.
@@ -51,7 +53,7 @@ def limit_fps(fps: int = typer.Argument(60, help="Frames per second")):
 
 @cli.command(help="Clear the grid of all live cells.")
 def clear():
-    """ Clear the grid of all live cells. """
+    """Clear the grid of all live cells."""
     app = get_app()
     number_cells_live = app.grid_model.grid.sum()
 
@@ -61,7 +63,7 @@ def clear():
 
 @cli.command(name="help", help="Display help message, list of commands.")
 def _help():
-    """ Makes the 'help' command more consistent in a console. """
+    """Makes the 'help' command more consistent in a console."""
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
     typer.echo(result.stdout)

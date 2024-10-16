@@ -21,18 +21,18 @@ class InputText(Component):
 
         background_color (pygame.Color): The color of the background.
     """
-    def __init__(
-            self,
-            x: int,
-            y: int,
-            width: int,
-            height: int,
 
-            active: bool = True,
-            font_name: str = 'Arial.ttf',
-            font_size: int = 32,
-            font_color: pygame.Color = pygame.Color(0, 0, 0),
-            background_color: pygame.Color = pygame.Color(200, 200, 200),
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        active: bool = True,
+        font_name: str = "Arial.ttf",
+        font_size: int = 32,
+        font_color: pygame.Color = pygame.Color(0, 0, 0),
+        background_color: pygame.Color = pygame.Color(200, 200, 200),
     ):
         self.text = ""
         self.active = active
@@ -48,33 +48,39 @@ class InputText(Component):
             raise FileNotFoundError(f"Font not found: '{self.font_path}'")
 
     def handle_event(self, mouse_info: MouseInfo, keyboard_info: KeyboardInfo):
-        """ Delete last character, add character or bind the input text. """
+        """Delete last character, add character or bind the input text."""
         if self.active:
             for key in keyboard_info.keyboard_click:
                 if keyboard_info.keyboard_click[key]:
-                    if key == '\r':  # Enter
+                    if key == "\r":  # Enter
                         self.bind()
-                    elif key == '\x08':  # Backspace
+                    elif key == "\x08":  # Backspace
                         self.text = self.text[:-1]
                     else:
                         self.text += key
 
     def draw(self, screen: pygame.Surface):
-        """ Draw the input text on the screen. """
+        """Draw the input text on the screen."""
         if self.active:
             padding_horizontal = 20  # Todo: Make this dynamic and not hardcoded
             text = _draw_input_text(self, screen)
             padding_vertical = (self.textbox_rect.height - text.get_height()) // 2
-            screen.blit(text, (self.textbox_rect.x + padding_horizontal, self.textbox_rect.y + padding_vertical))
+            screen.blit(
+                text,
+                (
+                    self.textbox_rect.x + padding_horizontal,
+                    self.textbox_rect.y + padding_vertical,
+                ),
+            )
 
     def bind(self):
-        """ Empty the input text. """
+        """Empty the input text."""
         self.text = ""
 
 
 def _draw_input_text(
-        input_text: InputText,
-        screen: pygame.Surface,
+    input_text: InputText,
+    screen: pygame.Surface,
 ):
     """
     Draw the input text on the screen

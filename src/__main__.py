@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Automatically add the working directory to the path (pyinstaller when transformed into an executable)
 path = Path(__file__).parents[1].absolute()
-sys.path.append(f'{path}')
+sys.path.append(f"{path}")
 
 from src.app import app  # noqa: E402
 
@@ -40,5 +40,5 @@ def main():
         sys.exit(return_code)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

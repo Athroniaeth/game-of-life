@@ -13,7 +13,28 @@ from src.core.mouse import MouseInfo
 
 @dataclass
 class Game:
-    """ Game class that holds the main loop and the game components. """
+    """
+    Game class that holds the main loop and the game components.
+
+    Attributes:
+        cli (typer.Typer): The CLI application to use in the console.
+
+        console (Console): The console component of the game.
+        screen (pygame.Surface): The screen of the game.
+        clock (pygame.time.Clock): The clock of the game.
+
+        mouse_info (MouseInfo): The mouse user input information.
+        keyboard_info (KeyboardInfo): The keyboard user input information.
+
+        screen_size (Tuple[int, int]): The size of the screen.
+
+        grid_view (GridView): The grid view component.
+        grid_model (GridModel): The grid model component.
+        grid_controller (GridController): The grid controller component.
+
+        limit_fps (int): The limit of frames
+    """
+
     cli: typer.Typer
 
     console: Console
@@ -33,7 +54,7 @@ class Game:
 
     @classmethod
     def from_config(cls, _cli: typer.Typer, limit_fps: int = 40):
-        """ Create the game instance with the minimal configuration. """
+        """Create the game instance with the minimal configuration."""
         pygame.init()
 
         mouse_info = MouseInfo()
@@ -56,15 +77,12 @@ class Game:
             console=console,
             screen=screen,
             clock=clock,
-
             mouse_info=mouse_info,
             keyboard_info=keyboard_info,
             screen_size=screen_size,
-
             grid_view=grid_view,
             grid_model=grid_model,
             grid_controller=grid_controller,
-
             limit_fps=limit_fps,
         )
 
@@ -75,11 +93,11 @@ class Game:
         The main loop is responsible for handling the events,
         updating the game state and drawing the game components.
 
-        :raises SystemExit: If the user closes the window.
-        :raises KeyboardInterrupt: If the user closes the window.
-        :raises Exception: If the user closes the window.
+        Raises:
+            SystemExit: If the user closes the window.
+            KeyboardInterrupt: If the user closes the window.
+            Exception: If the user closes the window.
 
-        :return: None
         """
         while True:
             events = self._get_events()
@@ -104,10 +122,11 @@ class Game:
         """
         Get all the events from the user and check if the user wants to quit.
 
-        :return: List of events from the user.
-        :rtype: List[pygame.event.Event]
+        Raises:
+            SystemExit: If the user closes the window.
 
-        :raises SystemExit: If the user closes the window.
+        Returns:
+            List[pygame.event.Event]: The events from the user.
         """
         events = pygame.event.get()
         generator = (event for event in events if event.type == pygame.QUIT)
